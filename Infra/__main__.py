@@ -8,7 +8,7 @@ from pulumi_aws.ec2 import SecurityGroupRuleArgs
 # Configuration setup
 config = pulumi.Config()
 instance_type = 't3.small'
-ami = "ami-0b5a1c5d9f9e8b7e1"
+ami = "ami-0933f1385008d33c4"
 
 
 # Create a VPC
