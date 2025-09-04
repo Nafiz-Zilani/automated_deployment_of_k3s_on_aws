@@ -5,7 +5,7 @@ import pulumi_aws.ec2 as ec2
 from pulumi_aws.ec2 import SecurityGroupRuleArgs
 
 
-# Configuration setup
+# Configuration setups
 config = pulumi.Config()
 instance_type = 't3.small'
 ami = "ami-0933f1385008d33c4"
