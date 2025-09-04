@@ -67,13 +67,13 @@ public_route_table_association = ec2.RouteTableAssociation(
 )
 
 # Elastic IP for NAT Gateway
-eip = ec2.Eip('nat-eip', vpc=True)
+eip = ec2.Eip('nat-eip')
 
 # NAT Gateway
 nat_gateway = ec2.NatGateway(
     'nat-gateway',
     subnet_id=public_subnet.id,
-    allocation_id=eip.id,
+    allocation_id=eip.allocation_id,
     tags={
         'Name': 'nat-gateway',
     }
