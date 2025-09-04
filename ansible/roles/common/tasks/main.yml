@@ -5,7 +5,7 @@
     upgrade: dist
     force_apt_get: yes
 
-- name: Install dependencies
+- name: Install dependencie
   apt:
     name: 
       - curl
