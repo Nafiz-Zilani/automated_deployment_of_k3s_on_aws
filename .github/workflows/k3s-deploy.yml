@@ -65,21 +65,19 @@ jobs:
 
       - name: Generate Ansible inventory on GitHub Runner
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ env.GIT_RUNNER_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ env.GIT_RUNNER_IP }} << EOF
             mkdir -p /home/ubuntu/ansible/inventory
-            cat > /home/ubuntu/ansible/inventory/hosts.ini <<EOL
-[k3s_cluster:children]
-master
-workers
-
-[master]
-master-node ansible_host=${MASTER_NODE_IP} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/my-key-pair.pem
-
-[workers]
-worker-node-1 ansible_host=${WORKER_NODE1_IP} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/my-key-pair.pem
-worker-node-2 ansible_host=${WORKER_NODE2_IP} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/my-key-pair.pem
-EOL
-            EOF
+            echo "[k3s_cluster:children]" > /home/ubuntu/ansible/inventory/hosts.ini
+            echo "master" >> /home/ubuntu/ansible/inventory/hosts.ini
+            echo "workers" >> /home/ubuntu/ansible/inventory/hosts.ini
+            echo "" >> /home/ubuntu/ansible/inventory/hosts.ini
+            echo "[master]" >> /home/ubuntu/ansible/inventory/hosts.ini
+            echo "master-node ansible_host=${MASTER_NODE_IP} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/my-key-pair.pem" >> /home/ubuntu/ansible/inventory/hosts.ini
+            echo "" >> /home/ubuntu/ansible/inventory/hosts.ini
+            echo "[workers]" >> /home/ubuntu/ansible/inventory/hosts.ini
+            echo "worker-node-1 ansible_host=${WORKER_NODE1_IP} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/my-key-pair.pem" >> /home/ubuntu/ansible/inventory/hosts.ini
+            echo "worker-node-2 ansible_host=${WORKER_NODE2_IP} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/my-key-pair.pem" >> /home/ubuntu/ansible/inventory/hosts.ini
+          EOF
 
       - name: Run the Ansible playbook
         run: |
