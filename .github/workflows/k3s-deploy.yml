@@ -63,18 +63,27 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no -r $GITHUB_WORKSPACE/ansible ubuntu@${{ env.GIT_RUNNER_IP }}:/home/ubuntu/
 
-      - name: SSH into GitHub Runner and Copy the host ips
+      - name: Generate Ansible inventory on GitHub Runner
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ env.GIT_RUNNER_IP }} << 'EOF'
+            mkdir -p /home/ubuntu/ansible/inventory
+            cat > /home/ubuntu/ansible/inventory/hosts.ini <<EOL
+[k3s_cluster:children]
+master
+workers
 
-          # Update inventory file with dynamic IPs
-          sed -i "s/^master-node ansible_host=.*/master-node ansible_host=${{ env.MASTER_NODE_IP }}/" /home/ubuntu/ansible/inventory/hosts.ini
-          sed -i "s/^worker-node-1 ansible_host=.*/worker-node-1 ansible_host=${{ env.WORKER_NODE1_IP }}/" /home/ubuntu/ansible/inventory/hosts.ini
-          sed -i "s/^worker-node-2 ansible_host=.*/worker-node-2 ansible_host=${{ env.WORKER_NODE2_IP }}/" /home/ubuntu/ansible/inventory/hosts.ini
-          EOF
+[master]
+master-node ansible_host=${MASTER_NODE_IP} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/my-key-pair.pem
+
+[workers]
+worker-node-1 ansible_host=${WORKER_NODE1_IP} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/my-key-pair.pem
+worker-node-2 ansible_host=${WORKER_NODE2_IP} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/my-key-pair.pem
+EOL
+            EOF
 
       - name: Run the Ansible playbook
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ env.GIT_RUNNER_IP }} << 'EOF'
-          cd ansible && ansible-playbook -i inventory/hosts.ini site.yml
+            cd ansible
+            ansible-playbook -i inventory/hosts.ini site.yml
           EOF
